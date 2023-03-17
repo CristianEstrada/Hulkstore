@@ -54,7 +54,11 @@ const ListItem = styled.li`
     margin-bottom: 10px;
 `;
 
-const ContactItem = styled.p``
+const ContactItem = styled.div`
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+`;
 
 function Footer() {
   return (
