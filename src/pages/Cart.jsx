@@ -4,10 +4,11 @@ import Navbar from "../components/Navbar";
 import Announcements from "../components/Announcements";
 import Footer from "../components/Footer";
 import { Add, Remove } from "@material-ui/icons";
-
+import { mobile } from "../responsive";
 const Container = styled.div``;
 const Wrapper = styled.div`
   padding: 20px;
+  ${mobile({ padding: "10px" })}
 `;
 const Title = styled.h1`
   font-weight: 300;
@@ -29,7 +30,9 @@ const TopButton = styled.button`
   color: ${(props) => props.type === "filled" && "white"};
 `;
 
-const TopTexts = styled.div``;
+const TopTexts = styled.div`
+  ${mobile({ display: "none" })}
+`;
 const TopText = styled.span`
   text-decoration: underline;
   cursor: pointer;
@@ -38,6 +41,7 @@ const TopText = styled.span`
 const Bottom = styled.div`
   display: flex;
   justify-content: space-between;
+  ${mobile({flexDirection: "column"})}
 `;
 const Info = styled.div`
   flex: 3;
@@ -51,6 +55,7 @@ const Hr = styled.hr`
 const Product = styled.div`
   display: flex;
   justify-content: space-between;
+  ${mobile({flexDirection: "column"})}
 `;
 const ProductDetail = styled.div`
   flex: 2;
@@ -83,10 +88,12 @@ const ProductAmountContainer = styled.div`
 const ProductAmount = styled.div`
   font-size: 24px;
   margin: 5px;
+  ${mobile({margin: "5px 15px"})}
 `;
 const ProductPrice = styled.div`
   font-size: 30px;
   font-weight: 200;
+  ${mobile({marginBottom: "20px"})}
 `;
 const Summary = styled.div`
   flex: 1;
@@ -96,27 +103,23 @@ const Summary = styled.div`
   height: 50vh;
 `;
 const SummaryTitle = styled.h1`
-    font-weight: 200;
+  font-weight: 200;
 `;
 const SummaryItem = styled.div`
-    margin: 30px 0px;
-    display: flex;
-    justify-content: space-between;
-    font-weight: ${props=> props.type === "total" && "500"};
-    font-size: ${props=> props.type === "total" && "24px"};
-    `;
-const SummaryItemText = styled.span`
-
+  margin: 30px 0px;
+  display: flex;
+  justify-content: space-between;
+  font-weight: ${(props) => props.type === "total" && "500"};
+  font-size: ${(props) => props.type === "total" && "24px"};
 `;
-const SummaryItemPrice = styled.span`
-
-`;
+const SummaryItemText = styled.span``;
+const SummaryItemPrice = styled.span``;
 const Button = styled.button`
-    width: 100%;
-    padding: 10px;
-    background-color: black;
-    color: white;
-    font-weight: 600;
+  width: 100%;
+  padding: 10px;
+  background-color: black;
+  color: white;
+  font-weight: 600;
 `;
 
 const Cart = () => {
@@ -197,7 +200,7 @@ const Cart = () => {
               <SummaryItemPrice>8.000 $</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type="total">
-              <SummaryItemText >Total</SummaryItemText>
+              <SummaryItemText>Total</SummaryItemText>
               <SummaryItemPrice>48.000 $</SummaryItemPrice>
             </SummaryItem>
             <Button>IR A PAGAR</Button>
