@@ -27,16 +27,19 @@ export const categories = [
         id:1,
         img: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/DC_Comics_logo.svg/1024px-DC_Comics_logo.svg.png",
         title: "DC COMICS",
+        cat: "dc"
     },
     {
         id:2,
         img: "https://upload.wikimedia.org/wikipedia/commons/b/b9/Marvel_Logo.svg",
         title: "MARVEL",
+        cat: "marvel"
     },
     {
         id:3,
         img: "",
         title: "OTROS",
+        cat: "otros"
     },
 ];
 
