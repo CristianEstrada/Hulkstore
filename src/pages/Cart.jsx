@@ -5,6 +5,15 @@ import Announcements from "../components/Announcements";
 import Footer from "../components/Footer";
 import { Add, Remove } from "@material-ui/icons";
 import { mobile } from "../responsive";
+import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
+import { useState } from "react";
+import { useEffect } from "react";
+import { userRequest } from "../requestMethods"
+import { useHistory } from "react-router-dom";
+
+const KEY = process.env.REACT_APP_STRIPE_KEY;
+
 const Container = styled.div``;
 const Wrapper = styled.div`
   padding: 20px;
@@ -41,7 +50,7 @@ const TopText = styled.span`
 const Bottom = styled.div`
   display: flex;
   justify-content: space-between;
-  ${mobile({flexDirection: "column"})}
+  ${mobile({ flexDirection: "column" })}
 `;
 const Info = styled.div`
   flex: 3;
@@ -55,7 +64,7 @@ const Hr = styled.hr`
 const Product = styled.div`
   display: flex;
   justify-content: space-between;
-  ${mobile({flexDirection: "column"})}
+  ${mobile({ flexDirection: "column" })}
 `;
 const ProductDetail = styled.div`
   flex: 2;
@@ -88,12 +97,12 @@ const ProductAmountContainer = styled.div`
 const ProductAmount = styled.div`
   font-size: 24px;
   margin: 5px;
-  ${mobile({margin: "5px 15px"})}
+  ${mobile({ margin: "5px 15px" })}
 `;
 const ProductPrice = styled.div`
   font-size: 30px;
   font-weight: 200;
-  ${mobile({marginBottom: "20px"})}
+  ${mobile({ marginBottom: "20px" })}
 `;
 const Summary = styled.div`
   flex: 1;
@@ -123,7 +132,31 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const cart = useSelector(state => state.cart);
+  const [stripeToken,setStripeToken] = useState(null);
+  const history = useHistory();
+
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+  useEffect(() => {
+    const makeRequest = async () => {
+      try{
+        const res = await userRequest.post("/checkout/payment",
+        {
+          tokenId: stripeToken.id,
+          amount: cart.total*100,
+          
+        });
+        history.push("/success",{data:res.data})
+      }catch(err){
+
+      }
+    };
+    stripeToken && cart.total > 1 && makeRequest();
+  },[stripeToken, cart.total, history]);
   return (
+  
     <Container>
       <Navbar />
       <Announcements />
@@ -139,55 +172,33 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://hips.hearstapps.com/hmg-prod/images/marvel-gifts-index-image-1665410889.jpg?crop=0.502xw:1.00xh;0,0&resize=980:*" />
-                <Details>
-                  <ProductName>
-                    <b>Producto:</b>Taza marvel
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b>1235143634576
-                  </ProductId>
-                  <ProductCategory>
-                    <b>Categoria:</b>Marvel
-                  </ProductCategory>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>20.000 $</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {cart.products.map((product) => (
+              <Product>
+                <ProductDetail>
+                  <Image src={product.img} />
+                  <Details>
+                    <ProductName>
+                      <b>Producto:</b>{product.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID:</b>{product._id}
+                    </ProductId>
+                    <ProductCategory>
+                      <b>Categoria:</b>{product.categories}
+                    </ProductCategory>
+                  </Details>
+                </ProductDetail>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <Add />
+                    <ProductAmount>{product.quantity}</ProductAmount>
+                    <Remove />
+                  </ProductAmountContainer>
+                  <ProductPrice>{product.price*product.quantity} $</ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
             <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://hips.hearstapps.com/hmg-prod/images/marvel-gifts-index-image-1665410889.jpg?crop=0.502xw:1.00xh;0,0&resize=980:*" />
-                <Details>
-                  <ProductName>
-                    <b>Producto:</b>Taza marvel
-                  </ProductName>
-                  <ProductId>
-                    <b>ID:</b>1235143634576
-                  </ProductId>
-                  <ProductCategory>
-                    <b>Categoria:</b>Marvel
-                  </ProductCategory>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>20.000 $</ProductPrice>
-              </PriceDetail>
-            </Product>
           </Info>
           <Summary>
             <SummaryTitle>RESUMEN DE PEDIDO</SummaryTitle>
@@ -201,9 +212,20 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>48.000 $</SummaryItemPrice>
+              <SummaryItemPrice>{cart.total} $</SummaryItemPrice>
             </SummaryItem>
-            <Button>IR A PAGAR</Button>
+            <StripeCheckout
+            name="Hulk Store"
+            image="https://static1.cbrimages.com/wordpress/wp-content/uploads/2020/04/Marvel-VS-DC-Strongest-Heroes.png"
+            billingAddress
+            shippingAddress
+            description={`El total de tu cuenta es ${cart.total} $`}
+            amount={cart.total*100}
+            token={onToken}
+            stripeKey={KEY}
+            >
+              <Button>Pagar ahora</Button>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>
